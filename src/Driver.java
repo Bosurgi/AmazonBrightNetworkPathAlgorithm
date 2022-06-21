@@ -15,7 +15,10 @@ public class Driver {
         }
 
         @Override
-        public String toString() { return String.format("(%d, %d)", x, y); }
+        public String toString() { 
+            return String.format("(%d, %d)", x, y); 
+            
+        }
 
         @Override
         public boolean equals(Object o) {
@@ -23,8 +26,11 @@ public class Driver {
             return x == point.x && y == point.y;
         }
 
-        public Node offset(int ox, int oy) { return new Node(x + ox, y + oy, this);  }
-    }
+	public Node offset(int offX, int offY) {
+	    
+	    return new Node(x + offX, y + offY, this);
+	}
+    } // End of Node class
 
     public static boolean isFree(int[][] map, Node point) {
         if (point.y < 0 || point.y > map.length - 1) return false;
@@ -73,10 +79,10 @@ public class Driver {
         }
 
         List<Node> path = new ArrayList<>();
-        Node point = used.get(used.size() - 1);
-        while(point.previous != null) {
-            path.add(0, point);
-            point = point.previous;
+        Node node = used.get(used.size() - 1);
+        while(node.previous != null) {
+            path.add(0, node);
+            node = node.previous;
         }
         return path;
     }
@@ -97,14 +103,11 @@ public class Driver {
 		    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	    };
 	Node start = new Node(0, 0, null);
-        Node end = new Node(3, 4, null);
-        List<Node> path = findRoute(grid, start, end);
-        if (path != null) {
-            for (Node point : path) {
-                System.out.println(point);
-            }
-        }
-        else
-            System.out.println("No path found");
+        Node destination = new Node(3, 4, null);
+        List<Node> path = findRoute(grid, start, destination);
+        
+        if (path != null) System.out.println("The fastest path is: " + path);
+        
+        else System.out.println("Unable to reach delivery point");
     }
 }
