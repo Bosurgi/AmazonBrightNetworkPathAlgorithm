@@ -4,6 +4,11 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Stack;
 
+/**
+ * 
+ * @author A. La Fauci De Leo adapted from Olteanra (2014)
+ *
+ */
 public class Grid {
 
 	private static class Position {
