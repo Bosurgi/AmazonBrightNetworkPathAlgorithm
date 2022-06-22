@@ -1,5 +1,8 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Stack;
@@ -69,16 +72,22 @@ public class Grid {
 	    return matrix.length;
 	}
 
-	public Position[] getPathDFS() {
-		findStart();
-		path = new Stack<Position>();
-		shortestPath = null;
-
-		if (start != null) {
-			next(start);
+	/**
+	 * Method to return the list of obstacles
+	 * @return the list of obstacles present in the matrix
+	 */
+	public static List<Grid.Position> getObstacles() {
+	    List<Position> obstaclesPosition = new LinkedList<Position>();
+	    
+	    for(int i = 0; i < matrix.length; i++) {
+		for(int j = 0; j < matrix[i].length; j++) {
+		    if(matrix[i][j] == 'X') {
+			Position position = new Position(j, i);
+			obstaclesPosition.add(position);
+		    }
 		}
-
-		return shortestPath;
+	    }
+	    return obstaclesPosition;
 	}
 
 	public Position[] getPathBFS() {
@@ -242,9 +251,10 @@ public class Grid {
 	 */
 	public static char[][] addingObstacles(Grid grid) {
 	    Random rn = new Random();
-	    char[][] newMatrix = matrix.clone();
+	    char[][] newMatrix = matrix;
 	    
-	    for(int count = 20; count >= 0;) {
+	    // 20 - 4 Because we have already 3 obstacles and one ending point that cannot be replaced
+	    for(int count = 20 - 4; count > 0;) {
 		int randomX = rn.nextInt(10);
 		int randomY = rn.nextInt(10);
 		
@@ -262,7 +272,11 @@ public class Grid {
 	}
 
 	public static void main(String[] args) {
-		Grid sp = new Grid(new char[][] { 
+	    /**
+	     * The grid requested by the Work sample
+	     * with default obstacles at (9,7) (8,7) (6,7) (6,8)
+	     */
+	    Grid sp = new Grid(new char[][] { 
 		    		{ 'S', '1', '1', '1', '1', '1', '1', '1', '1','1' },
 				{ '1', '1', '1', '1', '1', '1', '1', '1', '1','1' }, 
 				{ '1', '1', '1', '1', '1', '1', '1', '1', '1','1' },
@@ -270,17 +284,19 @@ public class Grid {
 				{ '1', '1', '1', '1', '1', '1', '1', '1', '1','1' }, 
 				{ '1', '1', '1', '1', '1', '1', '1', '1', '1','1' }, 
 				{ '1', '1', '1', '1', '1', '1', '1', '1', '1','1' }, 
-				{ '1', '1', '1', '1', '1', '1', '1', 'X', 'X','X' }, 
-				{ '1', '1', '1', '1', '1', '1', '1', 'X', '1','1' }, 
+				{ '1', '1', '1', '1', '1', '1', 'X', '1', 'X','X' }, 
+				{ '1', '1', '1', '1', '1', '1', 'X', '1', '1','1' }, 
 				{ '1', '1', '1', '1', '1', '1', '1', '1', '1','E' }
 				});
 		
 
 		Position[] path = sp.getPathBFS();
+		List<Position> obstacles = getObstacles();
+		
 		if (path != null) {
 			System.out.println("Path to destination: " + Arrays.toString(path));
 			System.out.println("No. Steps: " + path.length);
-			sp.cleanUp();
+			System.out.println("Obstacles: " + obstacles);
 			
 		} else {
 			System.out.println("Unable to reach delivery point.");
@@ -289,13 +305,16 @@ public class Grid {
 		Grid grid2 = new Grid(addingObstacles(sp));
 		Position[] path2 = grid2.getPathBFS();
 		
-		if(path2 != null) {
-			System.out.println("Path to destination: " + Arrays.toString(path2));
+		obstacles = getObstacles();
+		if(path2.length > 10) {
+			System.out.println("\nPath to destination: " + Arrays.toString(path2));
 			System.out.println("No. Steps: " + path2.length);
+			
+			System.out.printf("New %d random obstacles:" + obstacles, obstacles.size());
 		}
 		
 		else {
-		    System.out.println("Unable to reach delivery point.");
+		    System.out.println("\nUnable to reach delivery point.");
 		}
 		
 	}
