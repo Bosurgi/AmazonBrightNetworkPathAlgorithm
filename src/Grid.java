@@ -17,16 +17,16 @@ public class Grid {
 	private static class Position {
 		public int x;
 		public int y;
-		public Position predecessor;
+		public Position previous;
 
 		public Position(int x, int y) {
 			this.x = x;
 			this.y = y;
 		}
 
-		public Position(int x, int y, Position predecessor) {
+		public Position(int x, int y, Position previous) {
 			this(x, y);
-			this.predecessor = predecessor;
+			this.previous = previous;
 		}
 
 		@Override
@@ -90,12 +90,12 @@ public class Grid {
 	    return obstaclesPosition;
 	}
 
-	public Position[] getPathBFS() {
+	public Position[] getPath() {
 		findStart();
 		path = new Stack<Position>();
 		shortestPath = null;
 
-		LinkedList<Position> predecessors = new LinkedList<Position>();
+		LinkedList<Position> previous = new LinkedList<Position>();
 		Queue<Position> queue = new LinkedList<Position>();
 		queue.offer(start);
 		visit(start);
@@ -106,7 +106,7 @@ public class Grid {
 
 		while (!queue.isEmpty()) {
 			Position position = queue.poll();
-			predecessors.add(position);
+			previous.add(position);
 
 			if (!endFound(position)) {
 				Position nextPosition = new Position(position.x + 1, position.y, position);
@@ -137,12 +137,12 @@ public class Grid {
 			}
 		}
 
-		Position position = predecessors.getLast();
+		Position position = previous.getLast();
 
 		if (position != null) {
 			do {
 				path.push(position);
-				position = position.predecessor;
+				position = position.previous;
 			} while (position != null);
 
 			shortestPath = new Position[path.size()];
@@ -197,7 +197,7 @@ public class Grid {
 	}
 
 	private boolean endFound(Position position) {
-		return matrix[position.y][position.x] == 'E';
+		return matrix[position.y][position.x] == 'D';
 	}
 
 	private void stepForward(Position position) {
@@ -262,7 +262,7 @@ public class Grid {
 		    newMatrix[randomX][randomY] = 'X';
 		    count--;
 		}
-		else if(newMatrix[randomX][randomY] == 'S' || newMatrix[randomX][randomY] == 'E' || newMatrix[randomX][randomY] == 'X' )
+		else if(newMatrix[randomX][randomY] == 'S' || newMatrix[randomX][randomY] == 'D' || newMatrix[randomX][randomY] == 'X' )
 		{
 		    continue;
 		}
@@ -275,6 +275,10 @@ public class Grid {
 	    /**
 	     * The grid requested by the Work sample
 	     * with default obstacles at (9,7) (8,7) (6,7) (6,8)
+	     * S will be the Starting point
+	     * 1 where the robot can move
+	     * X represents an obstacle
+	     * D represents the destination
 	     */
 	    Grid sp = new Grid(new char[][] { 
 		    		{ 'S', '1', '1', '1', '1', '1', '1', '1', '1','1' },
@@ -286,11 +290,11 @@ public class Grid {
 				{ '1', '1', '1', '1', '1', '1', '1', '1', '1','1' }, 
 				{ '1', '1', '1', '1', '1', '1', 'X', '1', 'X','X' }, 
 				{ '1', '1', '1', '1', '1', '1', 'X', '1', '1','1' }, 
-				{ '1', '1', '1', '1', '1', '1', '1', '1', '1','E' }
+				{ '1', '1', '1', '1', '1', '1', '1', '1', '1','D' }
 				});
 		
 
-		Position[] path = sp.getPathBFS();
+		Position[] path = sp.getPath();
 		List<Position> obstacles = getObstacles();
 		
 		if (path != null) {
@@ -303,7 +307,7 @@ public class Grid {
 		}
 		
 		Grid grid2 = new Grid(addingObstacles(sp));
-		Position[] path2 = grid2.getPathBFS();
+		Position[] path2 = grid2.getPath();
 		
 		obstacles = getObstacles();
 		if(path2.length > 10) {
